@@ -18,24 +18,28 @@ public class PermissionCaptureActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         final String permission = getIntent().getStringExtra(BackgroundPermissionManager.EXTRA_PERMISSION);
-        if (permission == null) {
+        if (permission == null)
+        {
             throw new IllegalArgumentException("Permission should be provided with " +
                     "com.tasomaniac.widget.PERMISSION key.");
         }
 
         if (!getIntent().getBooleanExtra(BackgroundPermissionManager.EXTRA_FORCE_PERMISSION, false)
-                && ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                && ActivityCompat.shouldShowRequestPermissionRationale(this, permission))
+        {
             sendPermissionRationaleBroadcast(permission, true);
             finish();
-        } else {
-
+        }
+        else
+        {
             ActivityCompat.requestPermissions(this, new String[]{permission},
                     getIntent().getIntExtra(BackgroundPermissionManager.EXTRA_REQUEST_CODE, Integer.MAX_VALUE));
         }
 
     }
 
-    private void sendPermissionRationaleBroadcast(String permission, boolean value) {
+    private void sendPermissionRationaleBroadcast(String permission, boolean value)
+    {
         final Intent intent = new Intent(PermissionCallbacks.ACTION_PERMISSION_SHOW_RATIONALE);
         intent.putExtra(BackgroundPermissionManager.EXTRA_PERMISSION, permission);
         intent.putExtra(BackgroundPermissionManager.EXTRA_SHOW_RATIONALE, value);
@@ -45,15 +49,19 @@ public class PermissionCaptureActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-
-        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                                           @NonNull int[] grantResults)
+    {
+        if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
+        {
             // if permission was denied check if we should ask again in the future (i.e. they
             // did not check 'never ask again')
             String permission = getIntent().getStringExtra(BackgroundPermissionManager.EXTRA_PERMISSION);
-            if (shouldShowRequestPermissionRationale(permission)) {
+            if (shouldShowRequestPermissionRationale(permission))
+            {
                 sendPermissionRationaleBroadcast(permission, true);
-            } else {
+            }
+            else
+            {
                 sendPermissionRationaleBroadcast(permission, false);
             }
         }

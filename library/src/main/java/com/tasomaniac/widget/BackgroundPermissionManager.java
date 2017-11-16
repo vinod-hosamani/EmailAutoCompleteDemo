@@ -7,7 +7,8 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class BackgroundPermissionManager {
+public class BackgroundPermissionManager
+{
 
     public static final String EXTRA_REQUEST_CODE = "com.tasomaniac.widget.REQUEST_CODE";
     public static final String EXTRA_PERMISSION = "com.tasomaniac.widget.PERMISSION";
@@ -21,23 +22,29 @@ public class BackgroundPermissionManager {
 
     private IntentFilter mIntentFilter;
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
 
             final String action = intent.getAction();
-            if (PermissionCallbacks.ACTION_PERMISSION_RESULT.equals(action)) {
+            if (PermissionCallbacks.ACTION_PERMISSION_RESULT.equals(action))
+            {
                 callbacks.onRequestPermissionsResult(intent.getIntExtra(BackgroundPermissionManager.EXTRA_REQUEST_CODE, 0),
                         intent.getStringArrayExtra(BackgroundPermissionManager.EXTRA_PERMISSIONS),
                         intent.getIntArrayExtra(BackgroundPermissionManager.EXTRA_GRANT_RESULTS));
-            } else if (PermissionCallbacks.ACTION_PERMISSION_SHOW_RATIONALE.equals(action)) {
+            }
+            else if (PermissionCallbacks.ACTION_PERMISSION_SHOW_RATIONALE.equals(action))
+            {
                 callbacks.onShowRequestPermissionRationale(intent.getStringExtra(BackgroundPermissionManager.EXTRA_PERMISSION),
                         intent.getBooleanExtra(BackgroundPermissionManager.EXTRA_SHOW_RATIONALE, false));
             }
         }
     };
 
-    public BackgroundPermissionManager(PermissionCallbacks callbacks, Context context) {
+    public BackgroundPermissionManager(PermissionCallbacks callbacks, Context context)
+    {
         this.callbacks = callbacks;
         this.context = context;
 
@@ -46,23 +53,27 @@ public class BackgroundPermissionManager {
         mIntentFilter.addAction(PermissionCallbacks.ACTION_PERMISSION_SHOW_RATIONALE);
     }
 
-    public void resume() {
+    public void resume()
+    {
         LocalBroadcastManager.getInstance(context)
                 .registerReceiver(mReceiver, mIntentFilter);
     }
 
-    public void pause() {
+    public void pause()
+    {
         LocalBroadcastManager.getInstance(context)
                 .unregisterReceiver(mReceiver);
     }
 
     public static void requestPermission(final @NonNull Context context,
-                                         final @NonNull String permission, final int requestCode) {
+                                         final @NonNull String permission, final int requestCode)
+    {
         requestPermission(context, permission, requestCode, false);
     }
 
     public static void requestPermission(final @NonNull Context context,
-                                         final @NonNull String permission, final int requestCode, boolean force) {
+                                         final @NonNull String permission, final int requestCode, boolean force)
+    {
 
         Intent intent = new Intent(context, PermissionCaptureActivity.class);
         intent.putExtra(EXTRA_PERMISSION, permission);

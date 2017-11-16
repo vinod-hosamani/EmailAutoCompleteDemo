@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.tasomaniac.widget.emailautocompletetextview.R;
@@ -29,7 +30,8 @@ import java.util.HashSet;
 
 
 public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
-        implements View.OnFocusChangeListener, PermissionCallbacks {
+        implements View.OnFocusChangeListener, PermissionCallbacks
+{
 
     private static final int PERMISSIONS_REQUEST_GET_ACCOUNTS = 0;
 
@@ -41,19 +43,23 @@ public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
 
     private final BackgroundPermissionManager backgroundPermissionManager;
 
-    public EmailAutoCompleteLayout(Context context) {
+    public EmailAutoCompleteLayout(Context context)
+    {
         this(context, null, 0, 0);
     }
 
-    public EmailAutoCompleteLayout(Context context, AttributeSet attrs) {
+    public EmailAutoCompleteLayout(Context context, AttributeSet attrs)
+    {
         this(context, attrs, 0, 0);
     }
 
-    public EmailAutoCompleteLayout(Context context, AttributeSet attrs, int defStyle) {
+    public EmailAutoCompleteLayout(Context context, AttributeSet attrs, int defStyle)
+    {
         this(context, attrs, defStyle, 0);
     }
 
-    public EmailAutoCompleteLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public EmailAutoCompleteLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes)
+    {
         // Can't call through to super(Context, AttributeSet, int) since it doesn't exist on API 10
         super(context, attrs);
 
@@ -66,125 +72,154 @@ public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
                 R.styleable.EmailAutoCompleteLayout, defStyleAttr, defStyleRes);
 
         CharSequence permissionText = a.getText(R.styleable.EmailAutoCompleteLayout_permissionText);
-        if (permissionText == null) {
+        if (permissionText == null)
+        {
             permissionText = context.getString(R.string.message_get_accounts_permission);
         }
 
         a.recycle();
 
         permissionPrimer = new CheckBox(context);
-        permissionPrimer.setTextColor(0x8a000000);
-        permissionPrimer.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        permissionPrimer.setText(permissionText);
-        addView(permissionPrimer);
+      //  permissionPrimer.setTextColor(0x8a000000);
+       // permissionPrimer.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        //permissionPrimer.setText(permissionText);
+       // addView(permissionPrimer);
     }
 
-    public void setPermissionText(@StringRes int permissionText) {
+   /* public void setPermissionText(@StringRes int permissionText) {
         permissionPrimer.setText(permissionText);
     }
 
     public void setPermissionText(CharSequence permissionText) {
         permissionPrimer.setText(permissionText);
-    }
+    }*/
 
     @Override
-    public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if (child instanceof AutoCompleteTextView) {
+    public void addView(View child, int index, ViewGroup.LayoutParams params)
+    {
+        if (child instanceof AutoCompleteTextView)
+        {
             setAutoCompleteTextView((AutoCompleteTextView) child);
             super.addView(child, 0, params);
-        } else {
+        }
+        else
+        {
             // Carry on adding the View...
             super.addView(child, index, params);
         }
     }
 
-    private void setAutoCompleteTextView(AutoCompleteTextView child) {
+    private void setAutoCompleteTextView(AutoCompleteTextView child)
+    {
         // If we already have an AutoCompleteTextView, throw an exception
-        if (autoCompleteTextView != null) {
+        if (autoCompleteTextView != null)
+        {
             throw new IllegalArgumentException("We already have an AutoCompleteTextView, can only have one");
         }
         autoCompleteTextView = child;
-
         autoCompleteTextView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         autoCompleteTextView.setOnFocusChangeListener(this);
 
-        if (!isInEditMode()) {
+        if (!isInEditMode())
+        {
             setupAccountAutocomplete();
         }
     }
 
+
     @Override
-    protected void onAttachedToWindow() {
+    protected void onAttachedToWindow()
+    {
         super.onAttachedToWindow();
         backgroundPermissionManager.resume();
     }
 
     @Override
-    protected void onDetachedFromWindow() {
+    protected void onDetachedFromWindow()
+    {
         super.onDetachedFromWindow();
         backgroundPermissionManager.pause();
     }
 
-    private void setupAccountAutocomplete() {
+    private void setupAccountAutocomplete()
+    {
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.GET_ACCOUNTS) ==
-                PackageManager.PERMISSION_GRANTED) {
+                PackageManager.PERMISSION_GRANTED)
+        {
             permissionPrimer.setVisibility(View.GONE);
 
             adapter = createEmailAddressAdapter();
             autoCompleteTextView.setAdapter(adapter);
-        } else {
+        }
+        else
+        {
             setupPermissionPrimer();
         }
     }
+    private void setupPermissionPrimer()
+    {
+       // permissionPrimer.setChecked(false);
+      //  permissionPrimer.setVisibility(View.VISIBLE);
 
-    private void setupPermissionPrimer() {
-        permissionPrimer.setChecked(false);
-        permissionPrimer.setVisibility(View.VISIBLE);
-        permissionPrimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        BackgroundPermissionManager.requestPermission(getContext(),
+                Manifest.permission.GET_ACCOUNTS,
+                PERMISSIONS_REQUEST_GET_ACCOUNTS, true);
+
+       /* permissionPrimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if (isChecked)
+                {
                     BackgroundPermissionManager.requestPermission(getContext(),
                             Manifest.permission.GET_ACCOUNTS,
                             PERMISSIONS_REQUEST_GET_ACCOUNTS, true);
                 }
             }
-        });
+        });*/
     }
 
-    private ArrayAdapter<String> createEmailAddressAdapter() {
+    private ArrayAdapter<String> createEmailAddressAdapter()
+    {
         Account[] deviceAccounts = AccountManager.get(getContext()).getAccounts();
-        for (Account account : deviceAccounts) {
-            if (isEmailAddress(account.name)) {
+        for (Account account : deviceAccounts)
+        {
+            if (isEmailAddress(account.name))
+            {
                 accounts.add(account.name);
             }
         }
 
         return new ArrayAdapter<>(getContext(),
-                android.R.layout.select_dialog_item,
-                new ArrayList<>(accounts));
+                android.R.layout.select_dialog_item, new ArrayList<>(accounts));
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus && ViewCompat.isAttachedToWindow(this)) {
+    public void onFocusChange(View v, boolean hasFocus)
+    {
+        if (hasFocus && ViewCompat.isAttachedToWindow(this))
+        {
+            setupAccountAutocomplete();
             autoCompleteTextView.showDropDown();
         }
     }
 
-    private static boolean isEmailAddress(String possibleEmail) {
+    private static boolean isEmailAddress(String possibleEmail)
+    {
         return Patterns.EMAIL_ADDRESS.matcher(possibleEmail).matches();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        if (requestCode == PERMISSIONS_REQUEST_GET_ACCOUNTS) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupAccountAutocomplete();
-                autoCompleteTextView.requestFocus();
-                autoCompleteTextView.showDropDown();
+        if (requestCode == PERMISSIONS_REQUEST_GET_ACCOUNTS)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+             //   setupAccountAutocomplete();
+               // autoCompleteTextView.requestFocus();
+               // autoCompleteTextView.showDropDown();
                 permissionPrimer.setVisibility(View.GONE);
             }
         }
@@ -200,7 +235,8 @@ public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
      * Returns the {@link android.widget.AutoCompleteTextView} used for text input.
      */
     @Nullable
-    public AutoCompleteTextView getAutoCompleteTextView() {
+    public AutoCompleteTextView getAutoCompleteTextView()
+    {
         return autoCompleteTextView;
     }
 }
