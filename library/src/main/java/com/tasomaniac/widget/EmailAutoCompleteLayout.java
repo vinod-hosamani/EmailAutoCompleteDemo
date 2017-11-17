@@ -202,7 +202,7 @@ public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
         if (hasFocus && ViewCompat.isAttachedToWindow(this))
         {
             setupAccountAutocomplete();
-            autoCompleteTextView.showDropDown();
+            //autoCompleteTextView.showDropDown();
         }
     }
 
@@ -234,9 +234,9 @@ public class EmailAutoCompleteLayout extends BaseEmailAutoCompleteLayout
     /**
      * Returns the {@link android.widget.AutoCompleteTextView} used for text input.
      */
-    @Nullable
-    public AutoCompleteTextView getAutoCompleteTextView()
+   // @Nullable
+   /* public AutoCompleteTextView getAutoCompleteTextView()
     {
         return autoCompleteTextView;
-    }
+    }*/
 }
